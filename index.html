@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Colorful Calculator</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f7f7f7;
+      font-family: Arial, sans-serif;
+    }
+    
+    .calculator {
+      max-width: 300px;
+      margin: 50px auto;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: #e3f2fd;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .calculator input[type="text"] {
+      width: 100%;
+      height: 50px;
+      margin-bottom: 10px;
+      padding: 10px;
+      font-size: 24px;
+      border: none;
+      border-radius: 5px;
+      background-color: #ffffff;
+      color: #333333;
+      text-align: right;
+    }
+
+	.btn-success {
+      width: 100%;
+      height: 50px;
+      margin-bottom: 10px;
+      font-size: 20px;
+      border-radius: 5px;
+      background-color: #2e8017;
+      border: none;
+      color: #ffffff;
+    }
+	
+    .btn-primary {
+      width: 100%;
+      height: 50px;
+      margin-bottom: 10px;
+      font-size: 20px;
+      border-radius: 5px;
+      background-color: #03a9f4;
+      border: none;
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background-color: #0288d1;
+    }
+
+    .btn-primary:active {
+      background-color: #0277bd;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="calculator">
+      <input type="text" id="result" class="form-control mb-2" readonly>
+      <div class="row">
+        <div class="col">
+          <button class="btn btn-primary" onclick="appendToResult('7')">7</button>
+        </div>
+        <div class="col">
+          <button class="btn btn-primary" onclick="appendToResult('8')">8</button>
+        </div>
+        <div class="col">
+          <button class="btn btn-primary" onclick="appendToResult('9')">9</button>
+        </div>
+        <div class="col">
+          <button class="btn btn-primary" onclick="appendToResult('/')">/</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <button class="btn btn-primary" onclick="appendToResult('4')">4</button>
+        </div>
+        <div class="col">
+          <button class="btn btn-primary" onclick="appendToResult('5')">5</button>
+        </div>
+        <div class="col">
+          <button class="btn btn-primary" onclick="appendToResult('6')">6</button>
+        </div>
+        <div class="col">
+          <button class="btn btn-primary" onclick="appendToResult('*')">*</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <button class="btn btn-primary" onclick="appendToResult('1')">1</button>
+        </div>
+        <div class="col">
+          <button class="btn btn-primary" onclick="appendToResult('2')">2</button>
+        </div>
+        <div class="col">
+          <button class="btn btn-primary" onclick="appendToResult('3')">3</button>
+        </div>
+        <div class="col">
+          <button class="btn btn-primary" onclick="appendToResult('-')">-</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <button class="btn btn-primary" onclick="clearResult()">C</button>
+        </div>
+        <div class="col">
+          <button class="btn btn-primary" onclick="appendToResult('0')">0</button>
+        </div>
+        <div class="col">
+          <button class="btn btn-primary" onclick="calculate()">=</button>
+        </div>
+        <div class="col">
+          <button class="btn btn-primary" onclick="appendToResult('+')">+</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <button class="btn btn-success" onclick="showHistory()">Show History</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="historyModalLabel">History</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="history-list"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="printHistory()">Print</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize history array
+    var historyArray = [];
+
+    function appendToResult(value) {
+      document.getElementById('result').value += value;
+    }
+
+    function clearResult() {
+      document.getElementById('result').value = '';
+    }
+
+    function calculate() {
+      var expression = document.getElementById('result').value;
+      try {
+        var result = eval(expression);
+        if (isNaN(result) || !isFinite(result)) {
+          throw new Error('Invalid expression');
+        }
+        document.getElementById('result').value = result;
+        // Add operation to history
+        historyArray.push(expression + ' = ' + result);
+      } catch (error) {
+        document.getElementById('result').value = 'Error';
+      }
+    }
+
+    function showHistory() {
+      var historyList = document.getElementById('history-list');
+      historyList.innerHTML = '';
+      if (historyArray.length === 0) {
+        historyList.innerHTML = '<p>No history</p>';
+      } else {
+        historyArray.forEach(function(operation) {
+          var p = document.createElement('p');
+          p.textContent = operation;
+          historyList.appendChild(p);
+        });
+      }
+      // Show modal
+      var historyModal = new bootstrap.Modal(document.getElementById('historyModal'));
+      historyModal.show();
+    }
+
+    function printHistory() {
+      var content = document.getElementById('history-list').innerHTML;
+      var printWindow = window.open('', '_blank');
+      printWindow.document.open();
+      printWindow.document.write('<html><head><title>Calculator History</title></head><body>' + content + '</body></html>');
+      printWindow.document.close();
+      printWindow.print();
+    }
+  </script>
+
+  <!-- Bootstrap Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
